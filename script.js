@@ -15,6 +15,7 @@ class CleanMenuViewer {
     }
 
     init() {
+        this.optimizeForDevice(); // Detectar y optimizar para móvil primero
         this.createPages();
         this.createPageDots();
         this.setupTouchNavigation();
@@ -31,15 +32,49 @@ class CleanMenuViewer {
             pageDiv.className = 'menu-page';
             pageDiv.setAttribute('data-page', i);
             
-            // Usar embed para mostrar cada página del PDF
+            // Intentar diferentes métodos para mostrar sin interfaz
             pageDiv.innerHTML = `
-                <embed src="LVS MENU AGO 25 (1).pdf#page=${i}" 
-                       type="application/pdf" 
-                       class="page-pdf-embed">
+                <div class="pdf-container">
+                    <object data="LVS MENU AGO 25 (1).pdf#page=${i}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
+                            type="application/pdf" 
+                            class="page-pdf-object">
+                        <iframe src="LVS MENU AGO 25 (1).pdf#page=${i}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
+                                class="page-pdf-iframe"
+                                style="width:100%;height:100%;border:none;">
+                        </iframe>
+                    </object>
+                </div>
             `;
             
             this.pagesSlider.appendChild(pageDiv);
         }
+        
+        // Intentar aplicar estilos adicionales después de cargar
+        setTimeout(() => {
+            this.hidePDFControls();
+        }, 1000);
+    }
+
+    hidePDFControls() {
+        // Intentar ocultar controles del PDF con JavaScript
+        const iframes = document.querySelectorAll('.page-pdf-iframe');
+        iframes.forEach(iframe => {
+            try {
+                // Intentar acceder al contenido del iframe para ocultar controles
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc) {
+                    const style = iframeDoc.createElement('style');
+                    style.textContent = `
+                        #toolbar, .toolbar, .findbar, .secondaryToolbar { display: none !important; }
+                        .pdfViewer { padding-top: 0 !important; }
+                    `;
+                    iframeDoc.head.appendChild(style);
+                }
+            } catch (e) {
+                // Ignorar errores de CORS - es esperado cuando no podemos acceder al contenido del PDF
+                console.warn('PDF controls cannot be modified due to CORS policy:', e.message);
+            }
+        });
     }
 
     createPageDots() {
@@ -143,26 +178,35 @@ class CleanMenuViewer {
         let startX = 0;
         let startY = 0;
         let isDragging = false;
+        let startTime = 0;
 
         const viewer = document.getElementById('menu-viewer');
 
         viewer.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
+            startTime = Date.now();
             isDragging = true;
-        }, { passive: true });
+            
+            // Prevenir zoom en doble tap
+            e.preventDefault();
+        }, { passive: false });
 
         viewer.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
             
-            // Prevenir scroll vertical
             const currentX = e.touches[0].clientX;
             const currentY = e.touches[0].clientY;
             const diffX = Math.abs(currentX - startX);
             const diffY = Math.abs(currentY - startY);
             
-            if (diffX > diffY) {
+            // Si es un gesto horizontal, prevenir scroll vertical
+            if (diffX > diffY && diffX > 10) {
                 e.preventDefault();
+                
+                // Feedback visual durante el swipe
+                const progress = Math.min(diffX / 100, 1);
+                viewer.style.opacity = 1 - (progress * 0.1);
             }
         }, { passive: false });
 
@@ -171,18 +215,32 @@ class CleanMenuViewer {
             
             const endX = e.changedTouches[0].clientX;
             const endY = e.changedTouches[0].clientY;
+            const endTime = Date.now();
             
             const diffX = startX - endX;
             const diffY = startY - endY;
+            const timeDiff = endTime - startTime;
+            const velocity = Math.abs(diffX) / timeDiff;
             
-            // Solo procesar swipes horizontales significativos
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+            // Restaurar opacidad
+            viewer.style.opacity = 1;
+            
+            // Umbrales más sensibles para móvil
+            const minDistance = 30; // Distancia mínima más pequeña
+            const minVelocity = 0.1; // Velocidad mínima para swipe rápido
+            
+            // Solo procesar swipes horizontales
+            if (Math.abs(diffX) > Math.abs(diffY) && 
+                (Math.abs(diffX) > minDistance || velocity > minVelocity)) {
+                
                 if (diffX > 0) {
                     // Swipe izquierda = página siguiente
                     this.nextPage();
+                    this.addSwipeAnimation('left');
                 } else {
                     // Swipe derecha = página anterior
                     this.previousPage();
+                    this.addSwipeAnimation('right');
                 }
             }
             
@@ -190,6 +248,18 @@ class CleanMenuViewer {
             startX = 0;
             startY = 0;
         }, { passive: true });
+    }
+
+    addSwipeAnimation(direction) {
+        const currentPageElement = document.querySelector(`.menu-page[data-page="${this.currentPage}"]`);
+        if (currentPageElement) {
+            // Pequeña animación de feedback
+            currentPageElement.style.transform = direction === 'left' ? 'translateX(-5px)' : 'translateX(5px)';
+            setTimeout(() => {
+                currentPageElement.style.transition = 'transform 0.2s ease';
+                currentPageElement.style.transform = 'translateX(0)';
+            }, 50);
+        }
     }
 
     setupKeyboardNavigation() {
@@ -237,6 +307,44 @@ class CleanMenuViewer {
             });
         } else {
             document.exitFullscreen();
+        }
+    }
+
+    // Detectar si es dispositivo móvil
+    isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (window.innerWidth <= 768);
+    }
+
+    // Ajustar experiencia según dispositivo
+    optimizeForDevice() {
+        if (this.isMobile()) {
+            // En móvil: mostrar dots por más tiempo
+            this.hideDotsAfterDelay = () => {
+                setTimeout(() => {
+                    this.pageDots.classList.add('hidden');
+                    this.dotsVisible = false;
+                }, 6000); // 6 segundos en móvil
+            };
+            
+            // Añadir clase para estilos específicos de móvil
+            document.body.classList.add('mobile-device');
+            
+            // Prevenir zoom con doble tap
+            document.addEventListener('touchstart', (e) => {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            let lastTouchEnd = 0;
+            document.addEventListener('touchend', (e) => {
+                const now = (new Date()).getTime();
+                if (now - lastTouchEnd <= 300) {
+                    e.preventDefault();
+                }
+                lastTouchEnd = now;
+            }, false);
         }
     }
 }

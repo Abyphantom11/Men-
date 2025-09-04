@@ -95,13 +95,73 @@ body {
     transition: all 0.5s ease;
 }
 
-.page-pdf-embed {
+.page-pdf-iframe {
     width: 90vw;
     height: 90vh;
     border: none;
     border-radius: 8px;
     background: white;
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+    overflow: hidden;
+    pointer-events: auto;
+    /* Eliminar márgenes y padding */
+    margin: 0;
+    padding: 0;
+    /* Ocultar cualquier interfaz */
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* ===============================================
+   OCULTAR INTERFAZ PDF COMPLETAMENTE
+   =============================================== */
+
+/* Forzar que el iframe solo muestre contenido */
+.page-pdf-iframe {
+    /* ...existing code... */
+}
+
+/* Intentar ocultar controles del PDF viewer */
+.pdf-container {
+    width: 90vw;
+    height: 90vh;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+    background: white;
+    position: relative;
+}
+
+.menu-page iframe,
+.menu-page object {
+    width: 100%;
+    height: 120%; /* Hacer más alto para ocultar controles */
+    border: none;
+    position: absolute;
+    top: -60px; /* Mover hacia arriba para ocultar toolbar */
+    left: 0;
+}
+
+/* Alternativa: usar object en lugar de iframe */
+.page-pdf-object {
+    width: 90vw;
+    height: 90vh;
+    border: none;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
+    overflow: hidden;
+}
+
+/* CSS para pantalla completa sin controles */
+.fullscreen-pdf {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 10000;
+    background: black;
 }
 
 /* ===============================================
@@ -168,7 +228,7 @@ body {
 }
 
 /* ===============================================
-   RESPONSIVE - MÓVILES
+   RESPONSIVE - MÓVILES OPTIMIZADO
    =============================================== */
 
 @media (max-width: 768px) {
@@ -177,19 +237,39 @@ body {
         letter-spacing: 0.15em;
     }
     
-    .page-image,
-    .page-pdf-embed {
-        max-width: 95vw;
-        max-height: 85vh;
+    /* PDF en móviles - usar todo el espacio disponible */
+    .pdf-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0; /* Sin bordes redondeados en móvil */
+        box-shadow: none; /* Sin sombra en móvil para ser más limpio */
     }
     
+    .menu-page iframe,
+    .menu-page object {
+        width: 100%;
+        height: 110%;
+        top: -40px; /* Menos desplazamiento en móvil */
+    }
+    
+    /* Dots más grandes y accesibles en móvil */
     .page-dots {
-        bottom: 20px;
+        bottom: 30px;
+        z-index: 1000;
     }
     
     .page-dot {
-        width: 10px;
-        height: 10px;
+        width: 12px;
+        height: 12px;
+        margin: 0 4px;
+    }
+    
+    /* Asegurar que las páginas ocupen toda la pantalla */
+    .menu-page {
+        min-width: 100vw;
+        height: 100vh;
+        padding: 0;
+        margin: 0;
     }
 }
 
@@ -198,10 +278,62 @@ body {
         font-size: 2.5rem;
     }
     
-    .page-image,
-    .page-pdf-embed {
-        max-width: 98vw;
-        max-height: 80vh;
+    /* Móviles pequeños - experiencia ultra limpia */
+    .pdf-container {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    
+    .menu-page iframe,
+    .menu-page object {
+        width: 100%;
+        height: 105%;
+        top: -20px;
+    }
+    
+    /* Dots aún más grandes para dedos */
+    .page-dot {
+        width: 14px;
+        height: 14px;
+        margin: 0 6px;
+    }
+    
+    /* Hacer que el área de swipe sea más sensible */
+    .pure-menu-viewer {
+        touch-action: pan-x; /* Solo permitir swipe horizontal */
+    }
+}
+
+/* ===============================================
+   OPTIMIZACIONES TÁCTILES
+   =============================================== */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Dispositivos táctiles */
+    .page-dots {
+        /* Mostrar dots un poco más tiempo en móvil */
+        transition: opacity 0.3s ease;
+    }
+    
+    .page-dot {
+        /* Área de toque más grande */
+        padding: 8px;
+        margin: 0 2px;
+        position: relative;
+    }
+    
+    .page-dot::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: transparent;
     }
 }
 
@@ -230,4 +362,58 @@ html, body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
     display: none;
+}
+
+/* ===============================================
+   ESTILOS ESPECÍFICOS PARA MÓVILES (VIA JS)
+   =============================================== */
+
+.mobile-device .pure-menu-viewer {
+    /* Optimizaciones específicas para móvil */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: none; /* Prevenir over-scroll horizontal */
+    overscroll-behavior-y: contain; /* Permitir over-scroll vertical solo dentro */
+}
+
+.mobile-device .pdf-container {
+    /* En móvil usar toda la pantalla */
+    width: 100vw !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.mobile-device .page-dots {
+    /* Dots más visibles en móvil */
+    bottom: 25px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.mobile-device .page-dot {
+    /* Dots más grandes y fáciles de tocar */
+    width: 12px !important;
+    height: 12px !important;
+    margin: 0 6px !important;
+}
+
+/* Prevenir selección de texto durante swipes */
+.mobile-device * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+/* Smooth scrolling para transiciones */
+.mobile-device .menu-pages-slider {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-device .menu-page {
+    scroll-snap-align: start;
 }
