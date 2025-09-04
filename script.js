@@ -52,7 +52,16 @@ class MenuViewer {
             img.src = `menu/página ${i}.png`;
             img.alt = `Página ${i} del menú`;
             img.className = 'page-image';
-            img.onload = () => console.log(`Página ${i} cargada`);
+            
+            // Mejorar calidad de carga
+            img.loading = 'eager'; // Cargar inmediatamente
+            img.decoding = 'sync';  // Decodificación síncrona para mejor calidad
+            
+            img.onload = () => {
+                console.log(`Página ${i} cargada con alta calidad`);
+                // Forzar repaint para mejor calidad
+                img.style.transform = 'translateZ(0)';
+            };
             img.onerror = () => console.error(`Error cargando página ${i}`);
             
             page.appendChild(img);
@@ -158,16 +167,33 @@ class MenuViewer {
             }
         });
         
-        // Doble tap para resetear
+        // Doble tap para resetear zoom
         let lastTap = 0;
+        let tapCount = 0;
+        
         document.addEventListener('touchend', (e) => {
-            const currentTime = new Date().getTime();
-            const tapLength = currentTime - lastTap;
-            
-            if (tapLength < 500 && tapLength > 0) {
-                this.resetZoom();
+            // Solo procesar doble tap si es un solo toque
+            if (e.changedTouches.length === 1) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                
+                if (tapLength < 300 && tapLength > 0) {
+                    tapCount++;
+                    if (tapCount === 2) {
+                        console.log('Doble tap detectado - restaurando zoom');
+                        this.resetZoom();
+                        tapCount = 0;
+                    }
+                } else {
+                    tapCount = 1;
+                }
+                lastTap = currentTime;
+                
+                // Reset counter después de un tiempo
+                setTimeout(() => {
+                    tapCount = 0;
+                }, 300);
             }
-            lastTap = currentTime;
         });
     }
     

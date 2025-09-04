@@ -122,6 +122,19 @@ body {
     object-fit: contain;
     cursor: grab;
     transition: transform 0.3s ease;
+    
+    /* Mejora de calidad de imagen */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: high-quality;
+    
+    /* Anti-aliasing mejorado */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    
+    /* Mejor calidad al hacer zoom */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .page-image:active {
