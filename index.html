@@ -3,51 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LVS Menú - Agosto 2025</title>
+    <title>LVS • Carta Gastronómica</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Lato:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="title">🍽️ LVS Menú</h1>
-            <p class="subtitle">Agosto 2025</p>
-        </header>
-        
-        <main class="main-content">
-            <div class="menu-section">
-                <p class="description">
-                    Descubre nuestro delicioso menú del mes. Haz clic en "Ver Menú" para abrir el PDF completo.
-                </p>
-                
-                <div class="menu-actions">
-                    <a href="LVS MENU AGO 25 (1).pdf" target="_blank" class="btn btn-primary">
-                        📋 Ver Menú Completo
-                    </a>
-                    <a href="LVS MENU AGO 25 (1).pdf" download class="btn btn-secondary">
-                        💾 Descargar PDF
-                    </a>
-                </div>
-            </div>
-            
-            <div class="pdf-viewer">
-                <h2>Vista Previa del Menú</h2>
-                <div class="pdf-container">
-                    <embed src="LVS MENU AGO 25 (1).pdf" type="application/pdf" width="100%" height="600px">
-                    <p class="fallback-text">
-                        Si no puedes ver el PDF aquí, 
-                        <a href="LVS MENU AGO 25 (1).pdf" target="_blank">haz clic aquí para abrirlo en una nueva ventana</a>.
-                    </p>
-                </div>
-            </div>
-        </main>
-        
-        <footer class="footer">
-            <p>&copy; 2025 LVS. Todos los derechos reservados.</p>
-            <p class="made-with">Hecho con ❤️ para GitHub Pages</p>
-        </footer>
+    <!-- Overlay de carga -->
+    <div id="loading-overlay">
+        <div class="loading-content">
+            <div class="elegant-logo">LVS</div>
+            <div class="loading-text">Preparando su experiencia gastronómica...</div>
+        </div>
     </div>
+
+    <!-- Header minimalista -->
+    <header class="luxury-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-main">LVS</span>
+                <span class="logo-subtitle">RESTAURANT</span>
+            </div>
+            <div class="header-actions">
+                <button id="fullscreen-btn" class="icon-btn" title="Pantalla completa">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="download-btn" class="icon-btn" title="Descargar menú">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor principal del menú -->
+    <main class="menu-container">
+        <div class="pdf-viewer-luxury">
+            <div class="menu-navigation">
+                <button id="prev-btn" class="nav-btn nav-prev" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Anterior</span>
+                </button>
+                <div class="page-indicator">
+                    <span id="current-page">1</span> / <span id="total-pages">--</span>
+                </div>
+                <button id="next-btn" class="nav-btn nav-next">
+                    <span>Siguiente</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="pdf-display">
+                <iframe id="pdf-frame" src="LVS MENU AGO 25 (1).pdf" title="Menú LVS Restaurant"></iframe>
+                <div class="pdf-fallback">
+                    <div class="fallback-content">
+                        <i class="fas fa-file-pdf"></i>
+                        <h3>Visualización del Menú</h3>
+                        <p>Para la mejor experiencia, le recomendamos descargar nuestro menú</p>
+                        <a href="LVS MENU AGO 25 (1).pdf" download class="download-link">
+                            <i class="fas fa-download"></i>
+                            Descargar Carta PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 LVS Restaurant. Una experiencia culinaria excepcional.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>

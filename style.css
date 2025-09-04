@@ -1,224 +1,442 @@
-/* Estilos base */
+/* ===============================================
+   DISEÑO ELEGANTE PARA RESTAURANTE DE LUJO
+   =============================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    --luxury-black: #0a0a0a;
+    --luxury-gold: #d4af37;
+    --luxury-cream: #f8f6f0;
+    --luxury-gray: #2c2c2c;
+    --luxury-light-gray: #666;
+    --shadow-elegant: 0 8px 40px rgba(0, 0, 0, 0.12);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
-    color: #333;
+    font-family: 'Lato', sans-serif;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+    color: var(--luxury-cream);
     line-height: 1.6;
+    overflow-x: hidden;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    min-height: 100vh;
+/* ===============================================
+   OVERLAY DE CARGA ELEGANTE
+   =============================================== */
+
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(135deg, var(--luxury-black) 0%, var(--luxury-gray) 100%);
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
 }
 
-/* Header */
-.header {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 40px 30px;
-    border-radius: 20px;
+#loading-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-content {
     text-align: center;
-    margin-bottom: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 1s ease-out;
 }
 
-.title {
-    font-size: 3rem;
-    font-weight: 700;
-    color: #4a5568;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.subtitle {
-    font-size: 1.2rem;
-    color: #718096;
+.elegant-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
     font-weight: 300;
+    color: var(--luxury-gold);
+    margin-bottom: 1rem;
+    letter-spacing: 0.3em;
+    position: relative;
 }
 
-/* Contenido principal */
-.main-content {
-    flex: 1;
+.elegant-logo::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background: var(--luxury-gold);
+    animation: expandWidth 2s ease-out;
+}
+
+.loading-text {
+    font-size: 1.1rem;
+    color: var(--luxury-cream);
+    font-weight: 300;
+    opacity: 0.8;
+    animation: fadeIn 1.5s ease-out 0.5s both;
+}
+
+/* ===============================================
+   HEADER MINIMALISTA Y ELEGANTE
+   =============================================== */
+
+.luxury-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    padding: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+}
+
+.logo {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    align-items: flex-start;
 }
 
-.menu-section {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    text-align: center;
+.logo-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: var(--luxury-gold);
+    letter-spacing: 0.2em;
+    line-height: 1;
 }
 
-.description {
-    font-size: 1.1rem;
-    margin-bottom: 25px;
-    color: #4a5568;
+.logo-subtitle {
+    font-size: 0.7rem;
+    color: var(--luxury-cream);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    margin-top: 2px;
+    opacity: 0.7;
 }
 
-.menu-actions {
+.header-actions {
     display: flex;
     gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
 }
 
-/* Botones */
-.btn {
-    display: inline-block;
+.icon-btn {
+    background: none;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    color: var(--luxury-gold);
+    padding: 12px 16px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-btn:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--luxury-gold);
+    transform: translateY(-2px);
+}
+
+/* ===============================================
+   CONTENEDOR PRINCIPAL DEL MENÚ
+   =============================================== */
+
+.menu-container {
+    margin-top: 80px;
+    padding: 40px;
+    min-height: calc(100vh - 160px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-viewer-luxury {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(248, 246, 240, 0.98);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-elegant);
+    position: relative;
+}
+
+/* ===============================================
+   NAVEGACIÓN ELEGANTE
+   =============================================== */
+
+.menu-navigation {
+    background: var(--luxury-black);
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--luxury-gold);
+}
+
+.nav-btn {
+    background: none;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    color: var(--luxury-gold);
+    padding: 12px 24px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    font-family: 'Lato', sans-serif;
+    font-weight: 300;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 140px;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--luxury-gold);
+    transform: translateY(-2px);
+}
+
+.nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.nav-prev {
+    justify-content: flex-start;
+}
+
+.nav-next {
+    justify-content: flex-end;
+}
+
+.page-indicator {
+    font-family: 'Playfair Display', serif;
+    color: var(--luxury-gold);
+    font-size: 1.1rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+}
+
+/* ===============================================
+   VISUALIZADOR PDF ELEGANTE
+   =============================================== */
+
+.pdf-display {
+    position: relative;
+    height: 800px;
+    background: var(--luxury-cream);
+}
+
+#pdf-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+}
+
+.pdf-fallback {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--luxury-cream);
+    color: var(--luxury-black);
+}
+
+.fallback-content {
+    text-align: center;
+    padding: 40px;
+}
+
+.fallback-content i {
+    font-size: 4rem;
+    color: var(--luxury-gold);
+    margin-bottom: 20px;
+}
+
+.fallback-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 400;
+    margin-bottom: 15px;
+    color: var(--luxury-black);
+}
+
+.fallback-content p {
+    margin-bottom: 30px;
+    color: var(--luxury-light-gray);
+    font-size: 1.1rem;
+}
+
+.download-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--luxury-gold);
+    color: var(--luxury-black);
     padding: 15px 30px;
     border-radius: 50px;
     text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    min-width: 200px;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3);
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.btn-primary:hover {
+.download-link:hover {
+    background: #b8941f;
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 6px 25px rgba(212, 175, 55, 0.4);
 }
 
-.btn-secondary {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-}
+/* ===============================================
+   FOOTER ELEGANTE
+   =============================================== */
 
-.btn-secondary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-}
-
-/* Visor PDF */
-.pdf-viewer {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.pdf-viewer h2 {
+.luxury-footer {
+    background: rgba(10, 10, 10, 0.9);
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 30px 40px;
     text-align: center;
-    margin-bottom: 20px;
-    color: #4a5568;
-    font-size: 1.8rem;
-    font-weight: 600;
 }
 
-.pdf-container {
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    background: #f7fafc;
-}
-
-.pdf-container embed {
-    border-radius: 15px;
-}
-
-.fallback-text {
-    text-align: center;
-    padding: 20px;
-    color: #718096;
-    font-style: italic;
-}
-
-.fallback-text a {
-    color: #667eea;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.fallback-text a:hover {
-    text-decoration: underline;
-}
-
-/* Footer */
-.footer {
-    background: rgba(255, 255, 255, 0.95);
-    padding: 20px;
-    border-radius: 20px;
-    text-align: center;
-    margin-top: 30px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.footer p {
-    margin: 5px 0;
-    color: #718096;
-}
-
-.made-with {
+.footer-content p {
+    color: var(--luxury-cream);
     font-size: 0.9rem;
-    font-style: italic;
+    font-weight: 300;
+    opacity: 0.7;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 15px;
+/* ===============================================
+   ANIMACIONES
+   =============================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
     }
-    
-    .title {
-        font-size: 2.2rem;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    
-    .header, .menu-section, .pdf-viewer, .footer {
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes expandWidth {
+    from {
+        width: 0;
+    }
+    to {
+        width: 60px;
+    }
+}
+
+/* ===============================================
+   RESPONSIVE DESIGN
+   =============================================== */
+
+@media (max-width: 1024px) {
+    .menu-container {
         padding: 20px;
     }
     
-    .menu-actions {
+    .pdf-display {
+        height: 700px;
+    }
+    
+    .header-content {
+        padding: 15px 20px;
+    }
+    
+    .menu-navigation {
+        padding: 15px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .elegant-logo {
+        font-size: 3rem;
+    }
+    
+    .logo-main {
+        font-size: 1.5rem;
+    }
+    
+    .header-content {
         flex-direction: column;
-        align-items: center;
+        gap: 20px;
+        text-align: center;
     }
     
-    .btn {
+    .menu-navigation {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .nav-btn {
         width: 100%;
-        max-width: 300px;
+        justify-content: center;
+        min-width: auto;
     }
     
-    .pdf-container embed {
-        height: 400px;
+    .pdf-display {
+        height: 600px;
+    }
+    
+    .menu-container {
+        margin-top: 120px;
     }
 }
 
 @media (max-width: 480px) {
-    .title {
-        font-size: 1.8rem;
+    .menu-container {
+        padding: 15px;
+        margin-top: 140px;
     }
     
-    .subtitle {
-        font-size: 1rem;
+    .pdf-display {
+        height: 500px;
     }
     
-    .pdf-container embed {
-        height: 300px;
+    .elegant-logo {
+        font-size: 2.5rem;
+    }
+    
+    .icon-btn {
+        padding: 8px 12px;
+        font-size: 0.8rem;
     }
 }
