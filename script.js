@@ -27,54 +27,25 @@ class CleanMenuViewer {
     createPages() {
         this.pagesSlider.innerHTML = '';
         
-        for (let i = 1; i <= this.totalPages; i++) {
-            const pageDiv = document.createElement('div');
-            pageDiv.className = 'menu-page';
-            pageDiv.setAttribute('data-page', i);
-            
-            // Intentar diferentes métodos para mostrar sin interfaz
-            pageDiv.innerHTML = `
-                <div class="pdf-container">
-                    <object data="LVS MENU AGO 25 (1).pdf#page=${i}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
-                            type="application/pdf" 
-                            class="page-pdf-object">
-                        <iframe src="LVS MENU AGO 25 (1).pdf#page=${i}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
-                                class="page-pdf-iframe"
-                                style="width:100%;height:100%;border:none;">
-                        </iframe>
-                    </object>
-                </div>
-            `;
-            
-            this.pagesSlider.appendChild(pageDiv);
-        }
+        // Crear solo UN contenedor para el PDF, no múltiples
+        const pageDiv = document.createElement('div');
+        pageDiv.className = 'menu-page active';
+        pageDiv.setAttribute('data-page', 1);
         
-        // Intentar aplicar estilos adicionales después de cargar
-        setTimeout(() => {
-            this.hidePDFControls();
-        }, 1000);
-    }
-
-    hidePDFControls() {
-        // Intentar ocultar controles del PDF con JavaScript
-        const iframes = document.querySelectorAll('.page-pdf-iframe');
-        iframes.forEach(iframe => {
-            try {
-                // Intentar acceder al contenido del iframe para ocultar controles
-                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                if (iframeDoc) {
-                    const style = iframeDoc.createElement('style');
-                    style.textContent = `
-                        #toolbar, .toolbar, .findbar, .secondaryToolbar { display: none !important; }
-                        .pdfViewer { padding-top: 0 !important; }
-                    `;
-                    iframeDoc.head.appendChild(style);
-                }
-            } catch (e) {
-                // Ignorar errores de CORS - es esperado cuando no podemos acceder al contenido del PDF
-                console.warn('PDF controls cannot be modified due to CORS policy:', e.message);
-            }
-        });
+        // Un solo PDF que navega internamente
+        pageDiv.innerHTML = `
+            <div class="pdf-container">
+                <iframe id="pdf-main-viewer" 
+                        src="LVS MENU AGO 25 (1).pdf#page=1&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
+                        class="page-pdf-iframe">
+                </iframe>
+            </div>
+        `;
+        
+        this.pagesSlider.appendChild(pageDiv);
+        
+        // Guardar referencia al iframe principal
+        this.mainPdfViewer = document.getElementById('pdf-main-viewer');
     }
 
     createPageDots() {
@@ -118,11 +89,15 @@ class CleanMenuViewer {
     }
 
     navigateToPage() {
-        const translateX = -((this.currentPage - 1) * 100);
-        this.pagesSlider.style.transform = `translateX(${translateX}vw)`;
+        // En lugar de mover slider, cambiar la página del PDF principal
+        if (this.mainPdfViewer) {
+            const newSrc = `LVS MENU AGO 25 (1).pdf#page=${this.currentPage}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH`;
+            this.mainPdfViewer.src = newSrc;
+        }
         
         this.updatePageDots();
         this.showDotsTemporarily();
+        this.addPageTransitionEffect();
     }
 
     updatePageDots() {
@@ -345,6 +320,21 @@ class CleanMenuViewer {
                 }
                 lastTouchEnd = now;
             }, false);
+        }
+    }
+
+    addPageTransitionEffect() {
+        // Efecto de transición suave al cambiar página
+        const pdfContainer = document.querySelector('.pdf-container');
+        if (pdfContainer) {
+            pdfContainer.style.opacity = '0.7';
+            pdfContainer.style.transform = 'scale(0.98)';
+            
+            setTimeout(() => {
+                pdfContainer.style.transition = 'all 0.3s ease';
+                pdfContainer.style.opacity = '1';
+                pdfContainer.style.transform = 'scale(1)';
+            }, 150);
         }
     }
 }

@@ -70,12 +70,12 @@ body {
     display: flex;
     width: 100%;
     height: 100%;
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform;
+    /* Ya no necesitamos transiciones de translateX */
+    position: relative;
 }
 
 .menu-page {
-    min-width: 100vw;
+    width: 100vw;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -95,33 +95,11 @@ body {
     transition: all 0.5s ease;
 }
 
-.page-pdf-iframe {
-    width: 90vw;
-    height: 90vh;
-    border: none;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-    overflow: hidden;
-    pointer-events: auto;
-    /* Eliminar márgenes y padding */
-    margin: 0;
-    padding: 0;
-    /* Ocultar cualquier interfaz */
-    -webkit-appearance: none;
-    appearance: none;
-}
-
 /* ===============================================
-   OCULTAR INTERFAZ PDF COMPLETAMENTE
+   VISUALIZADOR PDF LIMPIO - UN SOLO VISOR
    =============================================== */
 
-/* Forzar que el iframe solo muestre contenido */
-.page-pdf-iframe {
-    /* ...existing code... */
-}
-
-/* Intentar ocultar controles del PDF viewer */
+/* PDF container optimizado */
 .pdf-container {
     width: 90vw;
     height: 90vh;
@@ -130,38 +108,22 @@ body {
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
     background: white;
     position: relative;
+    transition: all 0.3s ease;
 }
 
-.menu-page iframe,
-.menu-page object {
+.page-pdf-iframe {
     width: 100%;
-    height: 120%; /* Hacer más alto para ocultar controles */
+    height: 120%; /* Altura extra para ocultar controles */
     border: none;
     position: absolute;
     top: -60px; /* Mover hacia arriba para ocultar toolbar */
     left: 0;
-}
-
-/* Alternativa: usar object en lugar de iframe */
-.page-pdf-object {
-    width: 90vw;
-    height: 90vh;
-    border: none;
-    border-radius: 8px;
-    background: white;
-    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
     overflow: hidden;
-}
-
-/* CSS para pantalla completa sin controles */
-.fullscreen-pdf {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw !important;
-    height: 100vh !important;
-    z-index: 10000;
-    background: black;
+    pointer-events: auto;
+    margin: 0;
+    padding: 0;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 /* ===============================================
