@@ -22,15 +22,19 @@
         @keyframes fadeInScale {
             0% {
                 opacity: 0;
-                transform: scale(0.5) translateY(30px);
+                transform: scale(0.3) translateY(50px);
             }
-            30% {
-                opacity: 0.3;
-                transform: scale(0.7) translateY(20px);
+            25% {
+                opacity: 0.2;
+                transform: scale(0.6) translateY(30px);
             }
-            60% {
-                opacity: 0.7;
-                transform: scale(0.9) translateY(10px);
+            50% {
+                opacity: 0.6;
+                transform: scale(0.8) translateY(15px);
+            }
+            75% {
+                opacity: 0.8;
+                transform: scale(0.95) translateY(5px);
             }
             100% {
                 opacity: 1;
@@ -38,8 +42,28 @@
             }
         }
         
+        @keyframes logoGlow {
+            0%, 100% {
+                text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(212, 175, 55, 0.8), 0 0 40px rgba(212, 175, 55, 0.6);
+            }
+        }
+        
         .elegant-logo {
-            animation: fadeInScale 3s ease-out !important;
+            animation: fadeInScale 3.5s ease-out, logoGlow 2s ease-in-out infinite 3.5s !important;
+            font-size: 4rem !important;
+            font-weight: 300 !important;
+            color: #d4af37 !important;
+            letter-spacing: 0.2em !important;
+            text-align: center !important;
+            position: relative !important;
+        }
+        
+        #loading-overlay {
+            display: flex !important;
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -79,18 +103,19 @@
                 loadingOverlay.style.display = 'flex';
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.zIndex = '9999';
-                console.log('Loading overlay forzado visible');
+                console.log('Loading overlay forzado visible - INICIANDO 4 SEGUNDOS');
                 
-                // Ocultar después de 4 segundos
+                // Ocultar después de 4 segundos REALES (4000ms)
                 setTimeout(function() {
+                    console.log('4 segundos completados - iniciando fade out');
+                    loadingOverlay.style.transition = 'opacity 1s ease-out';
                     loadingOverlay.style.opacity = '0';
-                    console.log('Ocultando loading overlay');
                     
                     setTimeout(function() {
                         loadingOverlay.style.display = 'none';
-                        console.log('Loading overlay removido');
-                    }, 1000);
-                }, 4000);
+                        console.log('Loading overlay removido después de fade');
+                    }, 1000); // 1 segundo para el fade out
+                }, 4000); // 4 segundos COMPLETOS
             }
         });
     </script>
