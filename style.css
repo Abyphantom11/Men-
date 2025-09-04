@@ -123,18 +123,18 @@ body {
     cursor: grab;
     transition: transform 0.3s ease;
     
-    /* Mejora de calidad de imagen */
+    /* Zoom real sin pérdida de calidad */
     image-rendering: -webkit-optimize-contrast;
-    image-rendering: high-quality;
+    image-rendering: pixelated; /* Para zoom sin suavizado */
     
-    /* Anti-aliasing mejorado */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    /* Mantener calidad nativa */
+    -ms-interpolation-mode: nearest-neighbor;
+    transform-origin: center center;
     
-    /* Mejor calidad al hacer zoom */
+    /* Hardware acceleration para mejor rendimiento */
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transform: translateZ(0);
+    will-change: transform;
 }
 
 .page-image:active {

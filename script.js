@@ -53,14 +53,19 @@ class MenuViewer {
             img.alt = `Página ${i} del menú`;
             img.className = 'page-image';
             
-            // Mejorar calidad de carga
-            img.loading = 'eager'; // Cargar inmediatamente
-            img.decoding = 'sync';  // Decodificación síncrona para mejor calidad
+            // Cargar en resolución completa para zoom HD
+            img.loading = 'eager';
+            img.decoding = 'sync';
             
             img.onload = () => {
-                console.log(`Página ${i} cargada con alta calidad`);
-                // Forzar repaint para mejor calidad
-                img.style.transform = 'translateZ(0)';
+                console.log(`Página ${i} cargada - Resolución: ${img.naturalWidth}x${img.naturalHeight}`);
+                // Calcular zoom máximo basado en resolución nativa
+                const maxZoom = Math.min(
+                    img.naturalWidth / window.innerWidth,
+                    img.naturalHeight / window.innerHeight
+                );
+                img.dataset.maxZoom = Math.max(3, maxZoom); // Mínimo 3x, máximo la resolución nativa
+                console.log(`Zoom máximo para página ${i}: ${img.dataset.maxZoom}x`);
             };
             img.onerror = () => console.error(`Error cargando página ${i}`);
             
@@ -162,7 +167,13 @@ class MenuViewer {
                 e.preventDefault();
                 const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
                 this.scale = (currentDistance / initialDistance) * initialScale;
-                this.scale = Math.min(Math.max(this.scale, 1), 3);
+                
+                // Obtener zoom máximo de la imagen actual
+                const currentImage = this.pages[this.currentPage].querySelector('.page-image');
+                const maxZoom = currentImage.dataset.maxZoom || 3;
+                
+                this.scale = Math.min(Math.max(this.scale, 1), parseFloat(maxZoom));
+                console.log(`Zoom actual: ${this.scale.toFixed(2)}x (máximo: ${maxZoom}x)`);
                 this.updateTransform();
             }
         });
@@ -207,8 +218,12 @@ class MenuViewer {
     updateTransform() {
         const currentImage = this.pages[this.currentPage].querySelector('.page-image');
         if (currentImage) {
+            // Aplicar transform sin suavizado para mantener píxeles nítidos
             currentImage.style.transform = `scale(${this.scale}) translate(${this.translateX}px, ${this.translateY}px)`;
+            currentImage.style.imageRendering = this.scale > 1.5 ? 'pixelated' : 'auto';
             currentImage.classList.toggle('zoomed', this.scale > 1);
+            
+            console.log(`Transform aplicado: scale(${this.scale.toFixed(2)})`);
         }
     }
     
