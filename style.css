@@ -57,7 +57,9 @@ body {
     font-weight: 300;
     color: var(--luxury-gold);
     letter-spacing: 0.2em;
-    animation: fadeInScale 2s ease-out;
+    animation: fadeInScale 2.5s ease-out, logoGlow 3s ease-in-out infinite 2.5s;
+    text-align: center;
+    position: relative;
 }
 
 /* ===============================================
@@ -204,17 +206,30 @@ body {
 }
 
 /* ===============================================
-   ANIMACIONES BÁSICAS (SIN EFECTOS DE HOJA)
+   ANIMACIONES BÁSICAS (CON LOADING BONITO)
    =============================================== */
 
 @keyframes fadeInScale {
     0% {
         opacity: 0;
-        transform: scale(0.8);
+        transform: scale(0.5) translateY(20px);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.8) translateY(10px);
     }
     100% {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes logoGlow {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.6), 0 0 30px rgba(212, 175, 55, 0.4);
     }
 }
 

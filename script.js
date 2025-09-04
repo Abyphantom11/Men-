@@ -16,13 +16,17 @@ class CleanMenuViewer {
 
     init() {
         this.optimizeForDevice();
-        this.forceFullscreenMode(); // Forzar pantalla completa
         this.createPages();
         this.createPageDots();
         this.setupTouchNavigation();
         this.setupZoomAndPan(); // Zoom con pinch
         this.setupKeyboardNavigation();
         this.handleLoading();
+        
+        // Forzar pantalla completa después del loading para no interferir
+        setTimeout(() => {
+            this.forceFullscreenMode();
+        }, 1000);
         // Ya no necesitamos ocultar dots porque están ocultos por CSS
     }
 
