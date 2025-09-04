@@ -141,36 +141,34 @@ class CleanMenuViewer {
             const currentPageNum = parseInt(currentActivePage.getAttribute('data-page'));
             const isNextPage = pageNumber > currentPageNum;
             
-            // ANIMACIÓN DE LIBRO - Efecto página pasando
+            // ANIMACIÓN REAL DE HOJA - Como libro físico
             currentActivePage.classList.remove('active');
             
-            // Aplicar transformación según dirección
+            // Aplicar animación de hoja real según dirección
             if (isNextPage) {
-                // Página hacia la derecha (siguiente)
-                currentActivePage.style.transformOrigin = 'left center';
-                currentActivePage.style.animation = 'pageFlipRight 0.6s ease-in-out forwards';
-                newActivePage.style.transformOrigin = 'right center';
-                newActivePage.style.animation = 'pageSlideInRight 0.6s ease-in-out forwards';
+                // Hoja volteándose hacia la derecha
+                currentActivePage.style.animation = 'realPageTurnRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                newActivePage.style.animation = 'realPageSlideRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
             } else {
-                // Página hacia la izquierda (anterior)
-                currentActivePage.style.transformOrigin = 'right center';
-                currentActivePage.style.animation = 'pageFlipLeft 0.6s ease-in-out forwards';
-                newActivePage.style.transformOrigin = 'left center';
-                newActivePage.style.animation = 'pageSlideInLeft 0.6s ease-in-out forwards';
+                // Hoja volteándose hacia la izquierda
+                currentActivePage.style.animation = 'realPageTurnLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
+                newActivePage.style.animation = 'realPageSlideLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
             }
             
             // Activar nueva página inmediatamente para que se vea la animación
             setTimeout(() => {
                 newActivePage.classList.add('active');
-                
-                // Limpiar animaciones después
-                setTimeout(() => {
-                    currentActivePage.style.animation = '';
-                    newActivePage.style.animation = '';
-                    currentActivePage.style.transformOrigin = '';
-                    newActivePage.style.transformOrigin = '';
-                }, 600);
             }, 50);
+            
+            // Limpiar animaciones después
+            setTimeout(() => {
+                currentActivePage.style.animation = '';
+                newActivePage.style.animation = '';
+                currentActivePage.style.transformOrigin = '';
+                newActivePage.style.transformOrigin = '';
+                currentActivePage.style.zIndex = '';
+                newActivePage.style.zIndex = '';
+            }, 900);
             
             // Disparar evento personalizado para reset de zoom
             document.dispatchEvent(new Event('pageChanged'));
