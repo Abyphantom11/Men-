@@ -16,6 +16,7 @@ class CleanMenuViewer {
 
     init() {
         this.optimizeForDevice();
+        this.forceFullscreenMode(); // Forzar pantalla completa
         this.createPages();
         this.createPageDots();
         this.setupTouchNavigation();
@@ -60,14 +61,9 @@ class CleanMenuViewer {
         
         if (loader) loader.style.display = 'none';
         if (image) {
-            image.style.opacity = '0';
+            // Cambio instantáneo - sin fade
             image.style.display = 'block';
-            
-            // Fade in suave
-            setTimeout(() => {
-                image.style.transition = 'opacity 0.5s ease';
-                image.style.opacity = '1';
-            }, 50);
+            image.style.opacity = '1';
         }
     }
 
@@ -113,14 +109,9 @@ class CleanMenuViewer {
     animatePageEntrance() {
         const currentPage = document.querySelector('.menu-page[data-page="1"]');
         if (currentPage) {
-            currentPage.style.opacity = '0';
-            currentPage.style.transform = 'scale(0.9)';
-            
-            setTimeout(() => {
-                currentPage.style.transition = 'all 1s ease-out';
-                currentPage.style.opacity = '1';
-                currentPage.style.transform = 'scale(1)';
-            }, 100);
+            // Aparición instantánea - sin animación
+            currentPage.style.opacity = '1';
+            currentPage.style.transform = 'scale(1)';
         }
     }
 
@@ -137,38 +128,9 @@ class CleanMenuViewer {
         const newActivePage = document.querySelector(`[data-page="${pageNumber}"]`);
         
         if (currentActivePage && newActivePage && currentActivePage !== newActivePage) {
-            // Determinar dirección de la animación
-            const currentPageNum = parseInt(currentActivePage.getAttribute('data-page'));
-            const isNextPage = pageNumber > currentPageNum;
-            
-            // ANIMACIÓN REAL DE HOJA - Como libro físico
+            // CAMBIO INSTANTÁNEO - Sin animaciones
             currentActivePage.classList.remove('active');
-            
-            // Aplicar animación de hoja real según dirección
-            if (isNextPage) {
-                // Hoja volteándose hacia la derecha
-                currentActivePage.style.animation = 'realPageTurnRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-                newActivePage.style.animation = 'realPageSlideRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-            } else {
-                // Hoja volteándose hacia la izquierda
-                currentActivePage.style.animation = 'realPageTurnLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-                newActivePage.style.animation = 'realPageSlideLeft 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-            }
-            
-            // Activar nueva página inmediatamente para que se vea la animación
-            setTimeout(() => {
-                newActivePage.classList.add('active');
-            }, 50);
-            
-            // Limpiar animaciones después
-            setTimeout(() => {
-                currentActivePage.style.animation = '';
-                newActivePage.style.animation = '';
-                currentActivePage.style.transformOrigin = '';
-                newActivePage.style.transformOrigin = '';
-                currentActivePage.style.zIndex = '';
-                newActivePage.style.zIndex = '';
-            }, 900);
+            newActivePage.classList.add('active');
             
             // Disparar evento personalizado para reset de zoom
             document.dispatchEvent(new Event('pageChanged'));
@@ -301,15 +263,8 @@ class CleanMenuViewer {
     }
 
     addSwipeAnimation(direction) {
-        const currentPageElement = document.querySelector(`.menu-page[data-page="${this.currentPage}"]`);
-        if (currentPageElement) {
-            // Pequeña animación de feedback
-            currentPageElement.style.transform = direction === 'left' ? 'translateX(-5px)' : 'translateX(5px)';
-            setTimeout(() => {
-                currentPageElement.style.transition = 'transform 0.2s ease';
-                currentPageElement.style.transform = 'translateX(0)';
-            }, 50);
-        }
+        // Eliminamos animaciones de feedback - cambio instantáneo
+        return;
     }
 
     setupKeyboardNavigation() {
@@ -364,6 +319,32 @@ class CleanMenuViewer {
     isMobile() {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                (window.innerWidth <= 768);
+    }
+
+    // Forzar modo pantalla completa sin espacios
+    forceFullscreenMode() {
+        // Aplicar estilos inmediatos para eliminar espacios
+        document.documentElement.style.height = '100%';
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.height = '100%';
+        document.body.style.overflow = 'hidden';
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
+        
+        // Para Opera específicamente
+        if (window.opera || navigator.userAgent.indexOf('Opera') > -1 || navigator.userAgent.indexOf('OPR') > -1) {
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.height = '100%';
+            document.body.style.top = '0';
+            document.body.style.left = '0';
+        }
+
+        // Forzar viewport en móviles
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=3.0, user-scalable=yes, viewport-fit=cover');
+        }
     }
 
     // Ajustar experiencia según dispositivo
@@ -474,7 +455,7 @@ class CleanMenuViewer {
                 isZooming = false;
                 isDragging = false;
                 
-                // Reset zoom con doble tap
+                // Mejorado: Doble tap para restaurar/zoom
                 if (currentScale === 1 && e.changedTouches.length === 1) {
                     const now = new Date().getTime();
                     const timeSince = now - (this.lastTap || 0);
@@ -488,6 +469,22 @@ class CleanMenuViewer {
                             currentY = 0;
                             activeImage.style.transform = `scale(${currentScale}) translate(0px, 0px)`;
                             activeImage.classList.add('zoomed');
+                        }
+                    }
+                    this.lastTap = now;
+                } else if (currentScale > 1 && e.changedTouches.length === 1) {
+                    // Si ya hay zoom, doble tap restaura a tamaño normal
+                    const now = new Date().getTime();
+                    const timeSince = now - (this.lastTap || 0);
+                    
+                    if (timeSince < 300 && timeSince > 0) {
+                        const activeImage = document.querySelector('.menu-page.active .menu-page-image');
+                        if (activeImage) {
+                            currentScale = 1;
+                            currentX = 0;
+                            currentY = 0;
+                            activeImage.style.transform = `scale(1) translate(0px, 0px)`;
+                            activeImage.classList.remove('zoomed');
                         }
                     }
                     this.lastTap = now;
