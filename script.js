@@ -5,19 +5,42 @@
 class LuxuryMenuViewer {
     constructor() {
         this.currentPage = 1;
-        this.totalPages = 1;
-        this.pdfFrame = document.getElementById('pdf-frame');
+        this.totalPages = 8; // Ajusta según tu PDF
+        this.pagesSlider = document.getElementById('pages-slider');
         this.loadingOverlay = document.getElementById('loading-overlay');
         
         this.init();
     }
 
     init() {
+        this.createPages();
         this.setupEventListeners();
         this.handleLoading();
-        this.detectPDFPages();
+        this.updatePageIndicator();
+        this.updateNavigationButtons();
         this.setupKeyboardNavigation();
         this.addElegantAnimations();
+    }
+
+    createPages() {
+        // Limpiar el contenedor
+        this.pagesSlider.innerHTML = '';
+        
+        // Crear páginas dinámicamente
+        for (let i = 1; i <= this.totalPages; i++) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = `menu-page ${i === 1 ? 'active' : ''}`;
+            pageDiv.setAttribute('data-page', i);
+            
+            pageDiv.innerHTML = `
+                <div class="page-content">
+                    <embed src="LVS MENU AGO 25 (1).pdf#page=${i}" type="application/pdf">
+                    <div class="page-overlay"></div>
+                </div>
+            `;
+            
+            this.pagesSlider.appendChild(pageDiv);
+        }
     }
 
     setupEventListeners() {
@@ -73,7 +96,6 @@ class LuxuryMenuViewer {
         if (this.currentPage > 1) {
             this.currentPage--;
             this.navigateToPage();
-            this.addPageTransitionEffect('prev');
         }
     }
 
@@ -81,17 +103,26 @@ class LuxuryMenuViewer {
         if (this.currentPage < this.totalPages) {
             this.currentPage++;
             this.navigateToPage();
-            this.addPageTransitionEffect('next');
         }
     }
 
     navigateToPage() {
-        // Actualizar la URL del iframe para navegar páginas (si el PDF lo soporta)
-        const baseUrl = 'LVS MENU AGO 25 (1).pdf';
-        this.pdfFrame.src = `${baseUrl}#page=${this.currentPage}`;
+        // Calcular la posición del slider
+        const translateX = -((this.currentPage - 1) * 100);
+        this.pagesSlider.style.transform = `translateX(${translateX}%)`;
+        
+        // Actualizar clases active
+        document.querySelectorAll('.menu-page').forEach((page, index) => {
+            if (index + 1 === this.currentPage) {
+                page.classList.add('active');
+            } else {
+                page.classList.remove('active');
+            }
+        });
         
         this.updatePageIndicator();
         this.updateNavigationButtons();
+        this.addPageTransitionEffect();
     }
 
     updatePageIndicator() {
@@ -107,16 +138,16 @@ class LuxuryMenuViewer {
         nextBtn.disabled = this.currentPage >= this.totalPages;
     }
 
-    addPageTransitionEffect(direction) {
-        const pdfDisplay = document.querySelector('.pdf-display');
-        pdfDisplay.style.opacity = '0.7';
-        pdfDisplay.style.transform = direction === 'next' ? 'translateX(20px)' : 'translateX(-20px)';
-        
-        setTimeout(() => {
-            pdfDisplay.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-            pdfDisplay.style.opacity = '1';
-            pdfDisplay.style.transform = 'translateX(0)';
-        }, 100);
+    addPageTransitionEffect() {
+        // Efecto suave para la página actual
+        const currentPageElement = document.querySelector(`.menu-page[data-page="${this.currentPage}"]`);
+        if (currentPageElement) {
+            currentPageElement.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                currentPageElement.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                currentPageElement.style.transform = 'scale(1)';
+            }, 100);
+        }
     }
 
     setupKeyboardNavigation() {
@@ -301,7 +332,9 @@ class LuxuryMenuViewer {
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
-    new LuxuryMenuViewer();
+    const menuViewer = new LuxuryMenuViewer();
+    // Guardar referencia global si es necesario
+    window.menuViewer = menuViewer;
 });
 
 // Manejar cambios de fullscreen
@@ -327,6 +360,7 @@ window.addEventListener('load', () => {
             }
         } catch (e) {
             // Error de CORS o similar, mostrar fallback
+            console.warn('No se pudo cargar el PDF:', e.message);
             fallback.style.display = 'flex';
         }
     }, 3000);

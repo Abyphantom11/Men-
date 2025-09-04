@@ -14,7 +14,7 @@
     <!-- Overlay de carga -->
     <div id="loading-overlay">
         <div class="loading-content">
-            <div class="elegant-logo">LVS</div>
+            <div class="elegant-logo">Love me Sky</div>
             <div class="loading-text">Preparando su experiencia gastronómica...</div>
         </div>
     </div>
@@ -23,7 +23,7 @@
     <header class="luxury-header">
         <div class="header-content">
             <div class="logo">
-                <span class="logo-main">LVS</span>
+                <span class="logo-main">Love me Sky</span>
                 <span class="logo-subtitle">RESTAURANT</span>
             </div>
             <div class="header-actions">
@@ -55,7 +55,18 @@
             </div>
 
             <div class="pdf-display">
-                <iframe id="pdf-frame" src="LVS MENU AGO 25 (1).pdf" title="Menú LVS Restaurant"></iframe>
+                <div class="menu-pages-container">
+                    <div class="menu-pages-slider" id="pages-slider">
+                        <!-- Las páginas se cargarán aquí dinámicamente -->
+                        <div class="menu-page active" data-page="1">
+                            <div class="page-content">
+                                <embed src="LVS MENU AGO 25 (1).pdf#page=1" type="application/pdf">
+                                <div class="page-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="pdf-fallback">
                     <div class="fallback-content">
                         <i class="fas fa-file-pdf"></i>
