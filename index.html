@@ -17,6 +17,31 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&display=swap" rel="stylesheet">
     <!-- VERSION: Loading 4s + animaciones mejoradas - HTML FIXED - v003 -->
+    <style>
+        /* Asegurar que la animación esté disponible inmediatamente */
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(30px);
+            }
+            30% {
+                opacity: 0.3;
+                transform: scale(0.7) translateY(20px);
+            }
+            60% {
+                opacity: 0.7;
+                transform: scale(0.9) translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        .elegant-logo {
+            animation: fadeInScale 3s ease-out !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Overlay de carga minimalista -->
@@ -37,5 +62,37 @@
     </main>
 
     <script src="script.js?v=20250904-003"></script>
+    
+    <!-- Script de emergencia para garantizar loading -->
+    <script>
+        console.log('Loading script iniciado');
+        
+        // Asegurar que el loading esté visible al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const elegantLogo = document.querySelector('.elegant-logo');
+            
+            console.log('DOM cargado, loading overlay:', loadingOverlay);
+            console.log('Logo encontrado:', elegantLogo);
+            
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'flex';
+                loadingOverlay.style.opacity = '1';
+                loadingOverlay.style.zIndex = '9999';
+                console.log('Loading overlay forzado visible');
+                
+                // Ocultar después de 4 segundos
+                setTimeout(function() {
+                    loadingOverlay.style.opacity = '0';
+                    console.log('Ocultando loading overlay');
+                    
+                    setTimeout(function() {
+                        loadingOverlay.style.display = 'none';
+                        console.log('Loading overlay removido');
+                    }, 1000);
+                }, 4000);
+            }
+        });
+    </script>
 </body>
 </html>
