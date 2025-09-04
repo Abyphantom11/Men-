@@ -15,13 +15,14 @@ class CleanMenuViewer {
     }
 
     init() {
-        this.optimizeForDevice(); // Detectar y optimizar para móvil primero
+        this.optimizeForDevice();
         this.createPages();
         this.createPageDots();
         this.setupTouchNavigation();
+        this.setupZoomAndPan(); // Zoom con pinch
         this.setupKeyboardNavigation();
         this.handleLoading();
-        this.hideDotsAfterDelay();
+        // Ya no necesitamos ocultar dots porque están ocultos por CSS
     }
 
     createPages() {
@@ -124,10 +125,9 @@ class CleanMenuViewer {
     }
 
     navigateToPage() {
-        // Navegación entre páginas individuales (canvas)
+        // Navegación entre páginas individuales (imágenes)
         this.showPage(this.currentPage);
-        this.updatePageDots();
-        this.showDotsTemporarily();
+        // Ya no actualizamos dots ni los mostramos
     }
 
     showPage(pageNumber) {
@@ -137,14 +137,43 @@ class CleanMenuViewer {
         const newActivePage = document.querySelector(`[data-page="${pageNumber}"]`);
         
         if (currentActivePage && newActivePage && currentActivePage !== newActivePage) {
-            // Transición suave entre páginas
-            currentActivePage.classList.remove('active');
-            currentActivePage.classList.add('exiting');
+            // Determinar dirección de la animación
+            const currentPageNum = parseInt(currentActivePage.getAttribute('data-page'));
+            const isNextPage = pageNumber > currentPageNum;
             
+            // ANIMACIÓN DE LIBRO - Efecto página pasando
+            currentActivePage.classList.remove('active');
+            
+            // Aplicar transformación según dirección
+            if (isNextPage) {
+                // Página hacia la derecha (siguiente)
+                currentActivePage.style.transformOrigin = 'left center';
+                currentActivePage.style.animation = 'pageFlipRight 0.6s ease-in-out forwards';
+                newActivePage.style.transformOrigin = 'right center';
+                newActivePage.style.animation = 'pageSlideInRight 0.6s ease-in-out forwards';
+            } else {
+                // Página hacia la izquierda (anterior)
+                currentActivePage.style.transformOrigin = 'right center';
+                currentActivePage.style.animation = 'pageFlipLeft 0.6s ease-in-out forwards';
+                newActivePage.style.transformOrigin = 'left center';
+                newActivePage.style.animation = 'pageSlideInLeft 0.6s ease-in-out forwards';
+            }
+            
+            // Activar nueva página inmediatamente para que se vea la animación
             setTimeout(() => {
-                currentActivePage.classList.remove('exiting');
                 newActivePage.classList.add('active');
-            }, 200);
+                
+                // Limpiar animaciones después
+                setTimeout(() => {
+                    currentActivePage.style.animation = '';
+                    newActivePage.style.animation = '';
+                    currentActivePage.style.transformOrigin = '';
+                    newActivePage.style.transformOrigin = '';
+                }, 600);
+            }, 50);
+            
+            // Disparar evento personalizado para reset de zoom
+            document.dispatchEvent(new Event('pageChanged'));
         }
     }
 
@@ -384,6 +413,108 @@ class CleanMenuViewer {
                 pdfContainer.style.transform = 'scale(1)';
             }, 150);
         }
+    }
+
+    setupZoomAndPan() {
+        let isZooming = false;
+        let initialScale = 1;
+        let currentScale = 1;
+        let initialDistance = 0;
+        let initialX = 0, initialY = 0;
+        let currentX = 0, currentY = 0;
+        let isDragging = false;
+
+        // Zoom con pinch (dos dedos)
+        this.pagesSlider.addEventListener('touchstart', (e) => {
+            const activeImage = document.querySelector('.menu-page.active .menu-page-image');
+            if (!activeImage) return;
+
+            if (e.touches.length === 2) {
+                // Inicio de pinch zoom
+                e.preventDefault();
+                isZooming = true;
+                initialDistance = this.getDistance(e.touches[0], e.touches[1]);
+                initialScale = currentScale;
+            } else if (e.touches.length === 1 && currentScale > 1) {
+                // Inicio de pan (arrastrar cuando hay zoom)
+                isDragging = true;
+                initialX = e.touches[0].clientX - currentX;
+                initialY = e.touches[0].clientY - currentY;
+            }
+        });
+
+        this.pagesSlider.addEventListener('touchmove', (e) => {
+            const activeImage = document.querySelector('.menu-page.active .menu-page-image');
+            if (!activeImage) return;
+
+            if (e.touches.length === 2 && isZooming) {
+                // Zoom con pinch
+                e.preventDefault();
+                const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
+                const scale = (currentDistance / initialDistance) * initialScale;
+                currentScale = Math.min(Math.max(scale, 1), 4); // Entre 1x y 4x
+                
+                activeImage.style.transform = `scale(${currentScale}) translate(${currentX}px, ${currentY}px)`;
+                
+                if (currentScale > 1) {
+                    activeImage.classList.add('zoomed');
+                } else {
+                    activeImage.classList.remove('zoomed');
+                }
+            } else if (e.touches.length === 1 && isDragging && currentScale > 1) {
+                // Pan cuando hay zoom
+                e.preventDefault();
+                currentX = e.touches[0].clientX - initialX;
+                currentY = e.touches[0].clientY - initialY;
+                
+                activeImage.style.transform = `scale(${currentScale}) translate(${currentX}px, ${currentY}px)`;
+            }
+        });
+
+        this.pagesSlider.addEventListener('touchend', (e) => {
+            if (e.touches.length === 0) {
+                isZooming = false;
+                isDragging = false;
+                
+                // Reset zoom con doble tap
+                if (currentScale === 1 && e.changedTouches.length === 1) {
+                    const now = new Date().getTime();
+                    const timeSince = now - (this.lastTap || 0);
+                    
+                    if (timeSince < 300 && timeSince > 0) {
+                        // Doble tap = zoom 2x en el centro
+                        const activeImage = document.querySelector('.menu-page.active .menu-page-image');
+                        if (activeImage) {
+                            currentScale = 2;
+                            currentX = 0;
+                            currentY = 0;
+                            activeImage.style.transform = `scale(${currentScale}) translate(0px, 0px)`;
+                            activeImage.classList.add('zoomed');
+                        }
+                    }
+                    this.lastTap = now;
+                }
+            }
+        });
+
+        // Reset zoom al cambiar de página
+        document.addEventListener('pageChanged', () => {
+            currentScale = 1;
+            currentX = 0;
+            currentY = 0;
+            const activeImage = document.querySelector('.menu-page.active .menu-page-image');
+            if (activeImage) {
+                activeImage.style.transform = 'scale(1) translate(0px, 0px)';
+                activeImage.classList.remove('zoomed');
+            }
+        });
+    }
+
+    getDistance(touch1, touch2) {
+        return Math.sqrt(
+            Math.pow(touch2.clientX - touch1.clientX, 2) +
+            Math.pow(touch2.clientY - touch1.clientY, 2)
+        );
     }
 }
 
