@@ -27,25 +27,115 @@ class CleanMenuViewer {
     createPages() {
         this.pagesSlider.innerHTML = '';
         
-        // Crear solo UN contenedor para el PDF, no múltiples
-        const pageDiv = document.createElement('div');
-        pageDiv.className = 'menu-page active';
-        pageDiv.setAttribute('data-page', 1);
+        // Crear páginas individuales como imágenes convertidas desde PDF
+        for (let i = 1; i <= this.totalPages; i++) {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = `menu-page ${i === 1 ? 'active' : ''}`;
+            pageDiv.setAttribute('data-page', i);
+            
+            // Usar un canvas invisible para convertir PDF a imagen
+            pageDiv.innerHTML = `
+                <div class="page-container">
+                    <div class="page-loader" id="loader-${i}">
+                        <div class="loading-spinner"></div>
+                        <p>Cargando página ${i}...</p>
+                    </div>
+                    <canvas id="pdf-canvas-${i}" class="pdf-page-canvas" style="display:none;"></canvas>
+                </div>
+            `;
+            
+            this.pagesSlider.appendChild(pageDiv);
+        }
         
-        // Un solo PDF que navega internamente
-        pageDiv.innerHTML = `
-            <div class="pdf-container">
-                <iframe id="pdf-main-viewer" 
-                        src="LVS MENU AGO 25 (1).pdf#page=1&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH" 
-                        class="page-pdf-iframe">
-                </iframe>
+        // Cargar PDF.js y renderizar páginas
+        this.loadPDFPages();
+    }
+
+    async loadPDFPages() {
+        try {
+            // Cargar PDF.js desde CDN
+            if (!window.pdfjsLib) {
+                await this.loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+                // Configurar worker
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+            }
+
+            // Cargar el PDF
+            const loadingTask = window.pdfjsLib.getDocument('LVS MENU AGO 25 (1).pdf');
+            const pdf = await loadingTask.promise;
+            
+            this.totalPages = pdf.numPages;
+            this.updatePageDots();
+
+            // Renderizar cada página
+            for (let pageNum = 1; pageNum <= this.totalPages; pageNum++) {
+                await this.renderPage(pdf, pageNum);
+            }
+            
+        } catch (error) {
+            console.error('Error loading PDF:', error);
+            // Fallback: mostrar mensaje de error elegante
+            this.showPDFError();
+        }
+    }
+
+    async renderPage(pdf, pageNumber) {
+        try {
+            const page = await pdf.getPage(pageNumber);
+            const canvas = document.getElementById(`pdf-canvas-${pageNumber}`);
+            const context = canvas.getContext('2d');
+            const loader = document.getElementById(`loader-${pageNumber}`);
+
+            // Calcular escala para pantalla completa móvil
+            const viewport = page.getViewport({ scale: 1.0 });
+            const scale = Math.min(
+                window.innerWidth / viewport.width,
+                window.innerHeight / viewport.height
+            ) * 0.95; // 95% para dar un poco de margen
+
+            const scaledViewport = page.getViewport({ scale: scale });
+            
+            canvas.height = scaledViewport.height;
+            canvas.width = scaledViewport.width;
+
+            // Renderizar página en canvas
+            const renderContext = {
+                canvasContext: context,
+                viewport: scaledViewport
+            };
+
+            await page.render(renderContext).promise;
+            
+            // Mostrar canvas y ocultar loader
+            canvas.style.display = 'block';
+            loader.style.display = 'none';
+            
+        } catch (error) {
+            console.error(`Error rendering page ${pageNumber}:`, error);
+        }
+    }
+
+    loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    showPDFError() {
+        this.pagesSlider.innerHTML = `
+            <div class="menu-page active error-page">
+                <div class="error-content">
+                    <h2>Love me Sky</h2>
+                    <p>Nuestro menú está cargando...</p>
+                    <p>Por favor, recarga la página</p>
+                    <button onclick="location.reload()" class="reload-btn">Recargar</button>
+                </div>
             </div>
         `;
-        
-        this.pagesSlider.appendChild(pageDiv);
-        
-        // Guardar referencia al iframe principal
-        this.mainPdfViewer = document.getElementById('pdf-main-viewer');
     }
 
     createPageDots() {
@@ -89,15 +179,28 @@ class CleanMenuViewer {
     }
 
     navigateToPage() {
-        // En lugar de mover slider, cambiar la página del PDF principal
-        if (this.mainPdfViewer) {
-            const newSrc = `LVS MENU AGO 25 (1).pdf#page=${this.currentPage}&toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH`;
-            this.mainPdfViewer.src = newSrc;
-        }
-        
+        // Navegación entre páginas individuales (canvas)
+        this.showPage(this.currentPage);
         this.updatePageDots();
         this.showDotsTemporarily();
-        this.addPageTransitionEffect();
+    }
+
+    showPage(pageNumber) {
+        if (pageNumber < 1 || pageNumber > this.totalPages) return;
+        
+        const currentActivePage = document.querySelector('.menu-page.active');
+        const newActivePage = document.querySelector(`[data-page="${pageNumber}"]`);
+        
+        if (currentActivePage && newActivePage && currentActivePage !== newActivePage) {
+            // Transición suave entre páginas
+            currentActivePage.classList.remove('active');
+            currentActivePage.classList.add('exiting');
+            
+            setTimeout(() => {
+                currentActivePage.classList.remove('exiting');
+                newActivePage.classList.add('active');
+            }, 200);
+        }
     }
 
     updatePageDots() {

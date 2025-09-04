@@ -55,7 +55,7 @@ body {
 }
 
 /* ===============================================
-   VISOR PURO DE PÁGINAS
+   VISOR PURO DE PÁGINAS INDIVIDUALES
    =============================================== */
 
 .pure-menu-viewer {
@@ -67,64 +67,86 @@ body {
 }
 
 .menu-pages-slider {
-    display: flex;
     width: 100%;
     height: 100%;
-    /* Ya no necesitamos transiciones de translateX */
     position: relative;
 }
 
 .menu-page {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--luxury-black);
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.4, 0.0, 0.2, 1);
+    z-index: 1;
+}
+
+.menu-page.active {
+    opacity: 1;
+    transform: translateX(0);
+    z-index: 2;
+}
+
+.menu-page.exiting {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+.page-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
 }
 
-.page-image {
-    max-width: 90vw;
-    max-height: 90vh;
+/* Canvas para páginas PDF renderizadas */
+.pdf-page-canvas {
+    max-width: 95vw;
+    max-height: 95vh;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
-    transition: all 0.5s ease;
-}
-
-/* ===============================================
-   VISUALIZADOR PDF LIMPIO - UN SOLO VISOR
-   =============================================== */
-
-/* PDF container optimizado */
-.pdf-container {
-    width: 90vw;
-    height: 90vh;
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.3);
     background: white;
-    position: relative;
-    transition: all 0.3s ease;
 }
 
-.page-pdf-iframe {
-    width: 100%;
-    height: 120%; /* Altura extra para ocultar controles */
-    border: none;
+/* Loader para cada página */
+.page-loader {
     position: absolute;
-    top: -60px; /* Mover hacia arriba para ocultar toolbar */
-    left: 0;
-    overflow: hidden;
-    pointer-events: auto;
-    margin: 0;
-    padding: 0;
-    -webkit-appearance: none;
-    appearance: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: var(--luxury-gold);
 }
+
+.page-loader p {
+    margin-top: 20px;
+    font-size: 1.1rem;
+    font-weight: 300;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(212, 175, 55, 0.3);
+    border-top: 3px solid var(--luxury-gold);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+
+
 
 /* ===============================================
    INDICADOR SUTIL DE PÁGINAS
@@ -378,4 +400,55 @@ body::-webkit-scrollbar {
 
 .mobile-device .menu-page {
     scroll-snap-align: start;
+}
+
+/* Error fallback elegante */
+.error-page {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+
+.error-content {
+    text-align: center;
+    color: var(--luxury-gold);
+    padding: 40px;
+}
+
+.error-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    font-weight: 300;
+    letter-spacing: 3px;
+}
+
+.error-content p {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.reload-btn {
+    background: linear-gradient(135deg, var(--luxury-gold), #f4e4bc);
+    color: var(--luxury-black);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.reload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+/* Spinner animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
