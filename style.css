@@ -57,7 +57,7 @@ body {
     font-weight: 300;
     color: var(--luxury-gold);
     letter-spacing: 0.2em;
-    animation: fadeInScale 2.5s ease-out, logoGlow 3s ease-in-out infinite 2.5s;
+    animation: fadeInScale 3s ease-out, logoGlow 2s ease-in-out infinite 3s;
     text-align: center;
     position: relative;
 }
@@ -212,11 +212,15 @@ body {
 @keyframes fadeInScale {
     0% {
         opacity: 0;
-        transform: scale(0.5) translateY(20px);
+        transform: scale(0.5) translateY(30px);
     }
-    50% {
+    30% {
+        opacity: 0.3;
+        transform: scale(0.7) translateY(20px);
+    }
+    60% {
         opacity: 0.7;
-        transform: scale(0.8) translateY(10px);
+        transform: scale(0.9) translateY(10px);
     }
     100% {
         opacity: 1;

@@ -63,12 +63,15 @@ class CleanMenuViewer {
         const loader = document.getElementById(`loader-${pageNumber}`);
         const image = document.getElementById(`page-image-${pageNumber}`);
         
+        // Solo ocultar el loader específico de la página, NO el loading principal
         if (loader) loader.style.display = 'none';
         if (image) {
             // Cambio instantáneo - sin fade
             image.style.display = 'block';
             image.style.opacity = '1';
         }
+        
+        // NO remover el loading overlay aquí - se maneja en handleLoading()
     }
 
     showImageError(pageNumber) {
@@ -96,18 +99,19 @@ class CleanMenuViewer {
     }
 
     handleLoading() {
-        // Loading elegante y minimalista
+        // Loading elegante y minimalista - TIEMPO FIJO para mostrar la animación
+        // Sin importar qué tan rápido cargen las imágenes
         setTimeout(() => {
             this.loadingOverlay.classList.add('hidden');
             this.animatePageEntrance();
-        }, 2500);
+        }, 4000); // 4 segundos garantizados para ver "Love me Sky"
 
         // Remover completamente después de la transición
         setTimeout(() => {
             if (this.loadingOverlay) {
                 this.loadingOverlay.remove();
             }
-        }, 3500);
+        }, 5000); // 1 segundo extra para la transición de salida
     }
 
     animatePageEntrance() {
