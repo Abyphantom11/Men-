@@ -1,0 +1,157 @@
+/* ========================================
+   LOVE ME SKY - MENÚ ELEGANTE Y SIMPLE
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --black: #000000;
+    --gold: #d4af37;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Playfair Display', serif;
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* ========================================
+   PRESENTACIÓN "LOVE ME SKY" 
+   ======================================== */
+
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    transition: opacity 1s ease-out;
+}
+
+.loading-screen.hidden {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    pointer-events: none;
+}
+
+.logo-container {
+    text-align: center;
+}
+
+.elegant-logo {
+    font-size: 4rem;
+    font-weight: 300;
+    color: var(--gold);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    animation: logoEntrance 3s ease-out forwards;
+}
+
+/* Animación de entrada optimizada */
+@keyframes logoEntrance {
+    0% {
+        opacity: 0;
+        transform: scale(0.9) translateY(15px);
+        filter: blur(4px);
+    }
+    30% {
+        opacity: 0.8;
+        transform: scale(0.95) translateY(8px);
+        filter: blur(1px);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0px);
+        text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    }
+}
+
+/* ========================================
+   MENÚ PRINCIPAL
+   ======================================== */
+
+.menu-container {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    background: var(--black);
+}
+
+.page-slider {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.menu-page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.menu-page.active {
+    opacity: 1;
+}
+
+.page-image {
+    max-width: 100vw;
+    max-height: 100vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    cursor: grab;
+    transition: transform 0.3s ease;
+}
+
+.page-image:active {
+    cursor: grabbing;
+}
+
+.page-image.zoomed {
+    cursor: move;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .elegant-logo {
+        font-size: 3rem;
+        letter-spacing: 0.2em;
+    }
+    
+    .page-image {
+        width: 100vw;
+        height: 100vh;
+        object-fit: contain;
+    }
+}
+
+@media (max-width: 480px) {
+    .elegant-logo {
+        font-size: 2.5rem;
+        letter-spacing: 0.15em;
+    }
+}
