@@ -2,6 +2,24 @@
 // EXPERIENCIA ULTRA LIMPIA - SOLO NAVEGACIÓN POR GESTOS
 // ===============================================
 
+// Cache Busting y Service Worker Cleanup
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
+    });
+}
+
+// Force cache refresh en cada carga
+window.addEventListener('load', function() {
+    if (window.location.search.indexOf('nocache=') === -1) {
+        const nocacheValue = Date.now();
+        const separator = window.location.search ? '&' : '?';
+        window.history.replaceState({}, '', window.location.pathname + window.location.search + separator + 'nocache=' + nocacheValue);
+    }
+});
+
 class CleanMenuViewer {
     constructor() {
         this.currentPage = 1;
