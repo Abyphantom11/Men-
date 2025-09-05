@@ -108,6 +108,13 @@ class MenuViewer {
         document.addEventListener('touchend', (e) => {
             if (!isDragging) return;
             
+            // BLOQUEAR SWIPE SI HAY ZOOM ACTIVO
+            if (this.scale > 1) {
+                console.log('Swipe bloqueado - Zoom activo:', this.scale.toFixed(2) + 'x');
+                isDragging = false;
+                return;
+            }
+
             const endX = e.changedTouches[0].clientX;
             const diff = startX - endX;
             const threshold = 50;
@@ -150,20 +157,32 @@ class MenuViewer {
         }
     }
     
-    // Sistema de zoom simple
+    // Sistema de zoom con pan mejorado
     setupZoom() {
         let initialDistance = 0;
         let initialScale = 1;
+        let isPanning = false;
+        let startPanX = 0;
+        let startPanY = 0;
         
         document.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
+                // Zoom con dos dedos
                 initialDistance = this.getDistance(e.touches[0], e.touches[1]);
                 initialScale = this.scale;
+                isPanning = false;
+            } else if (e.touches.length === 1 && this.scale > 1) {
+                // Pan con un dedo cuando hay zoom
+                isPanning = true;
+                startPanX = e.touches[0].clientX;
+                startPanY = e.touches[0].clientY;
+                console.log('Pan iniciado en zoom:', this.scale.toFixed(2) + 'x');
             }
         });
         
         document.addEventListener('touchmove', (e) => {
             if (e.touches.length === 2) {
+                // Zoom con pinch
                 e.preventDefault();
                 const currentDistance = this.getDistance(e.touches[0], e.touches[1]);
                 this.scale = (currentDistance / initialDistance) * initialScale;
@@ -174,6 +193,20 @@ class MenuViewer {
                 
                 this.scale = Math.min(Math.max(this.scale, 1), parseFloat(maxZoom));
                 console.log(`Zoom actual: ${this.scale.toFixed(2)}x (máximo: ${maxZoom}x)`);
+                this.updateTransform();
+            } else if (e.touches.length === 1 && isPanning && this.scale > 1) {
+                // Pan cuando hay zoom activo
+                e.preventDefault();
+                const deltaX = e.touches[0].clientX - startPanX;
+                const deltaY = e.touches[0].clientY - startPanY;
+
+                this.translateX += deltaX * 0.5; // Sensibilidad reducida
+                this.translateY += deltaY * 0.5;
+
+                // Actualizar posición de inicio para el próximo movimiento
+                startPanX = e.touches[0].clientX;
+                startPanY = e.touches[0].clientY;
+
                 this.updateTransform();
             }
         });
@@ -205,6 +238,9 @@ class MenuViewer {
                     tapCount = 0;
                 }, 300);
             }
+
+            // Reset pan state
+            isPanning = false;
         });
     }
     
