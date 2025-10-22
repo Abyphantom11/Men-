@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVS • Carta Gastronómica</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Lato:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Overlay de carga -->
+    <div id="loading-overlay">
+        <div class="loading-content">
+            <div class="elegant-logo">Love me Sky</div>
+            <div class="loading-text">Preparando su experiencia gastronómica...</div>
+        </div>
+    </div>
+
+    <!-- Header minimalista -->
+    <header class="luxury-header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-main">Love me Sky</span>
+                <span class="logo-subtitle">RESTAURANT</span>
+            </div>
+            <div class="header-actions">
+                <button id="fullscreen-btn" class="icon-btn" title="Pantalla completa">
+                    <i class="fas fa-expand"></i>
+                </button>
+                <button id="download-btn" class="icon-btn" title="Descargar menú">
+                    <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedor principal del menú -->
+    <main class="menu-container">
+        <div class="pdf-viewer-luxury">
+            <div class="menu-navigation">
+                <button id="prev-btn" class="nav-btn nav-prev" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                    <span>Anterior</span>
+                </button>
+                <div class="page-indicator">
+                    <span id="current-page">1</span> / <span id="total-pages">--</span>
+                </div>
+                <button id="next-btn" class="nav-btn nav-next">
+                    <span>Siguiente</span>
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="pdf-display">
+                <div class="menu-pages-container">
+                    <div class="menu-pages-slider" id="pages-slider">
+                        <!-- Las páginas se cargarán aquí dinámicamente -->
+                        <div class="menu-page active" data-page="1">
+                            <div class="page-content">
+                                <embed src="LVS MENU AGO 25 (1).pdf#page=1" type="application/pdf">
+                                <div class="page-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pdf-fallback">
+                    <div class="fallback-content">
+                        <i class="fas fa-file-pdf"></i>
+                        <h3>Visualización del Menú</h3>
+                        <p>Para la mejor experiencia, le recomendamos descargar nuestro menú</p>
+                        <a href="LVS MENU AGO 25 (1).pdf" download class="download-link">
+                            <i class="fas fa-download"></i>
+                            Descargar Carta PDF
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer elegante -->
+    <footer class="luxury-footer">
+        <div class="footer-content">
+            <p>&copy; 2025 LVS Restaurant. Una experiencia culinaria excepcional.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

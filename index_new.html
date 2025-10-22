@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love me Sky - Select Language</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --gold: #d4af37;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Playfair Display', serif;
+            background: var(--black);
+            color: var(--white);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .language-selector {
+            text-align: center;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 300;
+            color: var(--gold);
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: var(--white);
+            margin-bottom: 3rem;
+            letter-spacing: 0.1em;
+            opacity: 0.8;
+        }
+
+        .language-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .language-btn {
+            background: transparent;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 1.5rem 3rem;
+            font-size: 1.3rem;
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .language-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .language-btn:hover::before {
+            left: 0;
+        }
+
+        .language-btn:hover {
+            color: var(--black);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .language-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+            }
+
+            .language-buttons {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .language-btn {
+                padding: 1.2rem 2rem;
+                font-size: 1.1rem;
+                min-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 2rem;
+                letter-spacing: 0.2em;
+            }
+
+            .language-btn {
+                min-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <h1 class="logo">Love me Sky</h1>
+        <p class="subtitle">Please select your language / Por favor selecciona tu idioma</p>
+        
+        <div class="language-buttons">
+            <button class="language-btn" onclick="selectLanguage('es')">
+                ESPAÑOL
+            </button>
+            <button class="language-btn" onclick="selectLanguage('en')">
+                ENGLISH
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function selectLanguage(lang) {
+            localStorage.setItem('preferredLanguage', lang);
+            
+            if (lang === 'es') {
+                window.location.href = 'index_es.html';
+            } else if (lang === 'en') {
+                window.location.href = 'index_en.html';
+            }
+        }
+    </script>
+</body>
+</html>
