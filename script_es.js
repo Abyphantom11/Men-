@@ -51,7 +51,7 @@ class MenuViewer {
             page.className = `menu-page ${i === 1 ? 'active' : ''}`;
             
             const img = document.createElement('img');
-            img.src = `${this.menuFolder}/página ${i}.png`;
+            img.src = `${this.menuFolder}/página ${i}.jpg`;
             img.alt = `Página ${i} del menú`;
             img.className = 'page-image';
             
